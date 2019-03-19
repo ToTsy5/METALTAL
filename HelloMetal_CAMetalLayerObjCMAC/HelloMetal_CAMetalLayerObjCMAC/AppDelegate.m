@@ -6,6 +6,8 @@
 //  Copyright © 2018 toshi. All rights reserved.
 //
 
+// コメントを追加します。
+
 #import "AppDelegate.h"
 #import "ViewController.h"
 
