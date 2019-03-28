@@ -1,0 +1,128 @@
+
+Copyright (c) 2019 Ashitagachan
+https://github.com/Ashitagachan
+https://www.youtube.com/channel/UCYnWUmMlicaSMeK-jynAwMw
+
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+If you release your application that use this software, you must add string 
+"Gachan" at a place where the application user can see.
+
+
+
+
+
+If you release your application that use this software, you must add string 
+"Gachan" at a place where the application user can see.
+
+
+If you release your application that use this software, you must add string "Gachan" at a place where the application user can see.
+
+If you release your application that use this software, you must add string “Gachan” at a place where the application user can see.
+
+
+
+
+	//なぜか実GPUのDebugビルドだけ、
+	//D3DXIIPass::Start()でのRTのクリアが次のDraw用のcommandListの後に実行されることがあるようで、チラつくのでその対処で、
+	//パスの最初のMargeDrawStartの最初のDraw用のcommandListに、RTのクリアをいれるようにする。
+	//なお、この現象はWaitForGPU()を間に入れてもかわらない。。
+	//ので、こんな感じの対処になってしまっている。正解は別にあるんだろうか？？
+	//そして、、Releaseビルドでは発生しない模様・・。
+
+
+描画の負荷が低いときだけ(AG01なら雲数個のキャラなし状態くらい)、
+
+	ID3D12DescriptorHeap*       SamplerHeap;//SAMPLERのヒープ(View) '"'"MaterialTex::WRAP_NUM x MaterialTex::WRAP_NUM
+
+
+	const static int            TextureNum = 2048;//DEFAULT 足りない場合はセットできるようにする予定
+	ID3D12Resource*             TextureRes[TextureNum];
+
+
+	const static int          VertexIndexBufferNum = 2048;//DEFAULT 足りない場合はセットできるようにする予定
+	ID3D12Resource*           VertexBufferRes [VertexIndexBufferNum];
+	D3D12_VERTEX_BUFFER_VIEW  VertexBufferView[VertexIndexBufferNum];//ヒープではなく直接View？
+	ID3D12Resource*           IndexBufferRes  [VertexIndexBufferNum];
+
+	ID3D12PipelineState* PipelineState[Shader::SHADER_NUM][2][2][D3DXII_CULL_MODE_NUM];
+	ID3D12RootSignature* RootSignature;
+
+	ID3D12CommandAllocator*    MergeCommandAlloc[ConstantSemaphoreNum];
+	ID3D12GraphicsCommandList* MergeCommandList [ConstantSemaphoreNum];
+
+	ID3D12Resource* UniformBufferVertex;   //VertexShaderConstantALLSize全部一気に割り当てます(D3D12DynamicIndexingのサンプルみてちょ)
+	void*           UniformBufferVertexMap;
+	ID3D12Resource* UniformBufferPixel;    //PixelShaderConstantALLSize全部一気に割り当てます(D3D12DynamicIndexingのサンプルみてちょ)
+
+	ID3D12DescriptorHeap*       CbvSrvHeap;
+
+
+
+		D3D12_INDEX_BUFFER_VIEW*  ibview = D3DXIIShader_GetIndexBufferView((int)ibuff);
+		MergeCommandList[ConstantIdx]->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		MergeCommandList[ConstantIdx]->IASetVertexBuffers(0, 1, morphvbuff[0]);
+		MergeCommandList[ConstantIdx]->IASetVertexBuffers(1, 1, morphvbuff[1]);
+		MergeCommandList[ConstantIdx]->IASetVertexBuffers(2, 1, morphvbuff[2]);
+		MergeCommandList[ConstantIdx]->IASetVertexBuffers(3, 1, morphvbuff[3]);
+		MergeCommandList[ConstantIdx]->IASetVertexBuffers(4, 1, morphvbuff[4]);
+		MergeCommandList[ConstantIdx]->IASetVertexBuffers(5, 1, morphvbuff[5]);
+		MergeCommandList[ConstantIdx]->IASetVertexBuffers(6, 1, morphvbuff[6]);
+		MergeCommandList[ConstantIdx]->IASetVertexBuffers(7, 1, morphvbuff[7]);
+		MergeCommandList[ConstantIdx]->IASetIndexBuffer(        ibview);
+
+
+
+D3D12 ERROR: ID3D12CommandList::DrawIndexedInstanced: The depth stencil format does not match that specified by the current pipeline state. A null depth stencil view may only be bound when the pipeline state depth stencil format is UNKNOWN. (pipeline state = D32_FLOAT, DSV ID3D12Resource* = 0x00000000:'(nullptr)') [ EXECUTION ERROR #615: DEPTH_STENCIL_FORMAT_MISMATCH_PIPELINE_STATE]
+
+
+
+
+D3D12 ERROR: ID3D12CommandAllocator::<final-release>: 
+
+
+A command allocator 0x06B950D8:
+'Unnamed ID3D12CommandAllocator Object' is being reset before previous executions associated with the allocator have completed. 
+
+
+
+[ EXECUTION ERROR #552: COMMAND_ALLOCATOR_SYNC]
+D3D12 ERROR: ID3D12Resource::<final-release>: CORRUPTION: 
+
+An ID3D12Resource object (0x06AA4888:'Unnamed Object') is referenced by GPU operations in-flight on Command Queue (0x026B70B0:'Unnamed ID3D12CommandQueue Object'). 
+
+ It is not safe to final-release objects that may have GPU operations pending. 
+ 
+  This can result in application instability. 
+  
+  
+  [ EXECUTION ERROR #921: OBJECT_DELETED_WHILE_STILL_IN_USE]
+ 
+ 
+0x7515C6D2 (KernelBase.dll) で例外がスローされました (ATESTD3D12.exe 内): 0x0000087D (パラメーター: 0x00000000, 0x0111D304, 0x0127BDC0)
+ハンドルされない例外が 0x7515C6D2 (KernelBase.dll) で発生しました(ATESTD3D12.exe 内): 0x0000087D (パラメーター: 0x00000000, 0x0111D304, 0x0127BDC0)。
+
+
+
+
+
+
+
+
