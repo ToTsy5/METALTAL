@@ -1,11 +1,10 @@
-##
-#
-# Gachan 
-#
-#
+
+
 
 Debug/
+
 Release/
+
 .DS_Store
 
 
