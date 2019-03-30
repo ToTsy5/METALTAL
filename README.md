@@ -23,3 +23,8 @@ Gachan's environment will be updated from time to time. The present condition is
 Explanation video content is here.
 
 https://m.youtube.com/channel/UCYnWUmMlicaSMeK-jynAwMw
+
+SAMPLE000.cpp
+![SAMPLE000](https://user-images.githubusercontent.com/48613272/55271881-c9598e00-52f7-11e9-8c9b-be52d1372bcc.png)
+
+
