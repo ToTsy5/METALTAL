@@ -8,6 +8,7 @@ Gachanはゲーム開発環境であり、ゲーム開発学習環境です。�
 
 Gachanの環境は随時更新されていきます。現状はまだまだ未完成な状態です。説明動画とともにアップデートしていきます。基本的には動画を見ながらキャッチアップしていってもらえればと思います。
 説明動画コンテンツはこちらになります。
+
 https://m.youtube.com/channel/UCYnWUmMlicaSMeK-jynAwMw
 
 
@@ -20,4 +21,5 @@ Gachan is a Game Development Environment and Game Development Learning Environme
 
 Gachan's environment will be updated from time to time. The present condition is still in an incomplete state.  We will update along with the explanatory video. Basically, I hope you can catch up while watching the video.
 Explanation video content is here.
+
 https://m.youtube.com/channel/UCYnWUmMlicaSMeK-jynAwMw
